@@ -50,15 +50,20 @@ Returns the array back to the pool.
 
 * `array` The array object to return to the pool.
 
-## Why cache typed arrays?
+### `pool.clearCache()`
+Removes all references to cached arrays.  Use this when you are done with the pool to return all the cached memory to the garbage collector.
+
+## FAQ
+
+### Why cache typed arrays?
 Creating typed arrays is stupidly expensive in most JS engines.  So it makes sense to pool them, both so that frequently used typed arrays stay hot in cache and so that you can avoid having to trigger some expensive realloc operation whenever you use them.
 
-## Why not cache ArrayBuffers instead?
+### Why not cache ArrayBuffers instead?
 Because creating a typed array from an array buffer is almost as expensive as allocating the typed array in the first place.  While this approach would save memory, it doesn't give much of a performance benefit for small arrays.  (See for example this experiment:  
 
 https://github.com/mikolalysenko/typedarray-cache-experiment
 
-## Is this library safe to use?
+### Is this library safe to use?
 Only if you know what you are doing.  This library will create a global pool of typed array buffers that you can use across many modules.  The downside though is that you have to manage all the memory yourself, so you can easily shoot yourself in the foot if you screw up.
 
 # Credits

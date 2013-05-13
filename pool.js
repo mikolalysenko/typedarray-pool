@@ -163,3 +163,19 @@ function malloc(n, dtype) {
   return null
 }
 exports.malloc = malloc
+
+
+function clearCache() {
+  for(var i=0; i<32; ++i) {
+    UINT8[i].length = 0
+    UINT16[i].length = 0
+    UINT32[i].length = 0
+    INT8[i].length = 0
+    INT16[i].length = 0
+    INT32[i].length = 0
+    FLOAT[i].length = 0
+    DOUBLE[i].length = 0
+    DATA[i].length = 0
+  }
+}
+exports.clearCache = clearCache
