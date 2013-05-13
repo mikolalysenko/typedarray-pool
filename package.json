@@ -1,6 +1,6 @@
 {
   "name": "typedarray-pool",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Reuse typed arrays",
   "main": "pool.js",
   "directories": {
