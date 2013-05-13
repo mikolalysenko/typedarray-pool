@@ -4,6 +4,8 @@ var pool = require("../pool.js")
 
 require("tap").test("typedarray-pool", function(t) {
 
+  pool.clearCache()
+
   for(var i=1; i<100; ++i) {
     var a
     a = pool.malloc(i, "int8")
@@ -51,6 +53,8 @@ require("tap").test("typedarray-pool", function(t) {
     t.assert(a.byteLength >= i)
     pool.free(a)
   }
+  
+  pool.clearCache()
 
   t.end()
 })
