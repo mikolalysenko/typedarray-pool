@@ -54,6 +54,57 @@ require("tap").test("typedarray-pool", function(t) {
     pool.free(a)
   }
   
+  
+  
+  
+  for(var i=1; i<100; ++i) {
+    var a
+    a = pool.mallocInt8(i)
+    t.assert(a instanceof Int8Array)
+    t.assert(a.length >= i)
+    pool.freeInt8(a)
+    
+    a = pool.mallocInt16(i)
+    t.assert(a instanceof Int16Array)
+    t.assert(a.length >= i)
+    pool.freeInt16(a)
+    
+    a = pool.mallocInt32(i)
+    t.assert(a instanceof Int32Array)
+    t.assert(a.length >= i)
+    pool.freeInt32(a)
+    
+    a = pool.mallocUint8(i)
+    t.assert(a instanceof Uint8Array)
+    t.assert(a.length >= i)
+    pool.freeUint8(a)
+    
+    a = pool.mallocUint16(i)
+    t.assert(a instanceof Uint16Array)
+    t.assert(a.length >= i)
+    pool.freeUint16(a)
+    
+    a = pool.mallocUint32(i)
+    t.assert(a instanceof Uint32Array)
+    t.assert(a.length >= i)
+    pool.freeUint32(a)
+    
+    a = pool.mallocFloat(i)
+    t.assert(a instanceof Float32Array)
+    t.assert(a.length >= i)
+    pool.freeFloat(a)
+    
+    a = pool.mallocDouble(i)
+    t.assert(a instanceof Float64Array)
+    t.assert(a.length >= i)
+    pool.freeDouble(a)
+    
+    a = pool.mallocArrayBuffer(i)
+    t.assert(a instanceof ArrayBuffer)
+    t.assert(a.byteLength >= i)
+    pool.freeArrayBuffer(a)
+  }
+  
   pool.clearCache()
 
   t.end()

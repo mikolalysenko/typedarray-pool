@@ -26,7 +26,7 @@ var UINT8   = POOL.UINT8
   , DOUBLE  = POOL.DOUBLE
   , DATA    = POOL.DATA
 
-function free(array) {
+exports.free = function free(array) {
   if(array instanceof ArrayBuffer) {
     var n = array.byteLength|0
       , log_n = bits.log2(n)
@@ -59,9 +59,44 @@ function free(array) {
     }
   }
 }
-exports.free = free
 
-function malloc(n, dtype) {
+exports.freeUint8 = function freeUint8(array) {
+  UINT8[bits.log2(array.length)].push(array)
+}
+
+exports.freeUint16 = function freeUint16(array) {
+  UINT16[bits.log2(array.length)].push(array)
+}
+
+exports.freeUint32 = function freeUint32(array) {
+  UINT32[bits.log2(array.length)].push(array)
+}
+
+exports.freeInt8 = function freeInt8(array) {
+  INT8[bits.log2(array.length)].push(array)
+}
+
+exports.freeInt16 = function freeInt16(array) {
+  INT16[bits.log2(array.length)].push(array)
+}
+
+exports.freeInt32 = function freeInt32(array) {
+  INT32[bits.log2(array.length)].push(array)
+}
+
+exports.freeFloat32 = exports.freeFloat = function freeFloat(array) {
+  FLOAT[bits.log2(array.length)].push(array)
+}
+
+exports.freeFloat64 = exports.freeDouble = function freeDouble(array) {
+  DOUBLE[bits.log2(array.length)].push(array)
+}
+
+exports.freeArrayBuffer = function freeArrayBuffer(array) {
+  DATA[bits.log2(array.length)].push(array)
+}
+
+exports.malloc = function malloc(n, dtype) {
   n = Math.max(bits.nextPow2(n), 32)
   var log_n = bits.log2(n)
   if(dtype === undefined) {
@@ -162,10 +197,116 @@ function malloc(n, dtype) {
   }
   return null
 }
-exports.malloc = malloc
 
+exports.mallocUint8 = function mallocUint8(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = UINT8[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Uint8Array(n)
+}
 
-function clearCache() {
+exports.mallocUint16 = function mallocUint16(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = UINT16[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Uint16Array(n)
+}
+
+exports.mallocUint32 = function mallocUint32(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = UINT32[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Uint32Array(n)
+}
+
+exports.mallocInt8 = function mallocInt8(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = INT8[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Int8Array(n)
+}
+
+exports.mallocInt16 = function mallocInt16(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = INT16[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Int16Array(n)
+}
+
+exports.mallocInt32 = function mallocInt32(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = INT32[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Int32Array(n)
+}
+
+exports.mallocFloat32 = exports.mallocFloat = function mallocFloat(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = FLOAT[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Float32Array(n)
+}
+
+exports.mallocFloat64 = exports.mallocDouble = function mallocDouble(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = DOUBLE[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new Float64Array(n)
+}
+
+exports.mallocArrayBuffer = function mallocArrayBuffer(n) {
+  n = Math.max(bits.nextPow2(n), 32)|0
+  var log_n = bits.log2(n)
+  var cache = DATA[log_n]
+  if(cache.length > 0) {
+    var r = cache[cache.length-1]
+    cache.pop()
+    return r
+  }
+  return new ArrayBuffer(n)
+}
+
+exports.clearCache = function clearCache() {
   for(var i=0; i<32; ++i) {
     UINT8[i].length = 0
     UINT16[i].length = 0
@@ -178,4 +319,3 @@ function clearCache() {
     DATA[i].length = 0
   }
 }
-exports.clearCache = clearCache

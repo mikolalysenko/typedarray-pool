@@ -45,10 +45,35 @@ Allocates a typed array (or ArrayBuffer) with at least n elements.
 
 **Returns** A typed array with at least `n` elements in it.
 
+**Note**  You can avoid the dispatch by directly calling one of the following methods:
+
+* `pool.mallocUint8`
+* `pool.mallocUint16`
+* `pool.mallocUint32`
+* `pool.mallocInt8`
+* `pool.mallocInt16`
+* `pool.mallocInt32`
+* `pool.mallocFloat`
+* `pool.mallocDouble`
+* `pool.mallocArrayBuffer`
+
+
 ### `pool.free(array)`
 Returns the array back to the pool.
 
 * `array` The array object to return to the pool.
+
+**Note** You can speed up the method if you know the type of array before hand by calling one of the following:
+
+* `pool.freeUint8`
+* `pool.freeUint16`
+* `pool.freeUint32`
+* `pool.freeInt8`
+* `pool.freeInt16`
+* `pool.freeInt32`
+* `pool.freeFloat`
+* `pool.freeDouble`
+* `pool.freeArrayBuffer`
 
 ### `pool.clearCache()`
 Removes all references to cached arrays.  Use this when you are done with the pool to return all the cached memory to the garbage collector.
