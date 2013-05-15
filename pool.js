@@ -30,16 +30,10 @@ exports.free = function free(array) {
   if(array instanceof ArrayBuffer) {
     var n = array.byteLength|0
       , log_n = bits.log2(n)
-    if(n < 32) {
-      return
-    }
     DATA[log_n].push(array)
   } else {
     var n = array.length|0
       , log_n = bits.log2(n)
-    if(n < 32) {
-      return
-    }
     if(array instanceof Uint8Array) {
       UINT8[log_n].push(array)
     } else if(array instanceof Uint16Array) {
@@ -97,7 +91,7 @@ exports.freeArrayBuffer = function freeArrayBuffer(array) {
 }
 
 exports.malloc = function malloc(n, dtype) {
-  n = Math.max(bits.nextPow2(n), 32)
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   if(dtype === undefined) {
     var d = DATA[log_n]
@@ -199,7 +193,7 @@ exports.malloc = function malloc(n, dtype) {
 }
 
 exports.mallocUint8 = function mallocUint8(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = UINT8[log_n]
   if(cache.length > 0) {
@@ -211,7 +205,7 @@ exports.mallocUint8 = function mallocUint8(n) {
 }
 
 exports.mallocUint16 = function mallocUint16(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = UINT16[log_n]
   if(cache.length > 0) {
@@ -223,7 +217,7 @@ exports.mallocUint16 = function mallocUint16(n) {
 }
 
 exports.mallocUint32 = function mallocUint32(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = UINT32[log_n]
   if(cache.length > 0) {
@@ -235,7 +229,7 @@ exports.mallocUint32 = function mallocUint32(n) {
 }
 
 exports.mallocInt8 = function mallocInt8(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = INT8[log_n]
   if(cache.length > 0) {
@@ -247,7 +241,7 @@ exports.mallocInt8 = function mallocInt8(n) {
 }
 
 exports.mallocInt16 = function mallocInt16(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = INT16[log_n]
   if(cache.length > 0) {
@@ -259,7 +253,7 @@ exports.mallocInt16 = function mallocInt16(n) {
 }
 
 exports.mallocInt32 = function mallocInt32(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = INT32[log_n]
   if(cache.length > 0) {
@@ -271,7 +265,7 @@ exports.mallocInt32 = function mallocInt32(n) {
 }
 
 exports.mallocFloat32 = exports.mallocFloat = function mallocFloat(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = FLOAT[log_n]
   if(cache.length > 0) {
@@ -283,7 +277,7 @@ exports.mallocFloat32 = exports.mallocFloat = function mallocFloat(n) {
 }
 
 exports.mallocFloat64 = exports.mallocDouble = function mallocDouble(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = DOUBLE[log_n]
   if(cache.length > 0) {
@@ -295,7 +289,7 @@ exports.mallocFloat64 = exports.mallocDouble = function mallocDouble(n) {
 }
 
 exports.mallocArrayBuffer = function mallocArrayBuffer(n) {
-  n = Math.max(bits.nextPow2(n), 32)|0
+  n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = DATA[log_n]
   if(cache.length > 0) {
