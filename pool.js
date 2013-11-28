@@ -106,85 +106,69 @@ exports.malloc = function malloc(n, dtype) {
       case "uint8":
         var u8 = UINT8[log_n]
         if(u8.length > 0) {
-          var r8 = u8[u8.length-1]
-          u8.pop()
-          return r8
+          return u8.pop()
         }
         return new Uint8Array(n)
       break
-      
+
       case "uint16":
         var u16 = UINT16[log_n]
         if(u16.length > 0) {
-          var r16 = u16[u16.length-1]
-          u16.pop()
-          return r16
+          return u16.pop()
         }
         return new Uint16Array(n)
       break
-      
+
       case "uint32":
         var u32 = UINT32[log_n]
         if(u32.length > 0) {
-          var r32 = u32[u32.length-1]
-          u32.pop()
-          return r32
+          return u32.pop()
         }
         return new Uint32Array(n)
       break
-      
+
       case "int8":
         var i8 = INT8[log_n]
         if(i8.length > 0) {
-          var s8 = i8[i8.length-1]
-          i8.pop()
-          return s8
+          return i8.pop()
         }
         return new Int8Array(n)
       break
-      
+
       case "int16":
         var i16 = INT16[log_n]
         if(i16.length > 0) {
-          var s16 = i16[i16.length-1]
-          i16.pop()
-          return s16
+          return i16.pop()
         }
         return new Int16Array(n)
       break
-      
+
       case "int32":
         var i32 = INT32[log_n]
         if(i32.length > 0) {
-          var s32 = i32[i32.length-1]
-          i32.pop()
-          return s32
+          return i32.pop()
         }
         return new Int32Array(n)
       break
-      
+
       case "float":
       case "float32":
         var f = FLOAT[log_n]
         if(f.length > 0) {
-          var q = f[f.length-1]
-          f.pop()
-          return q
+          return f.pop()
         }
         return new Float32Array(n)
       break
-      
+
       case "double":
       case "float64":
         var dd = DOUBLE[log_n]
         if(dd.length > 0) {
-          var p = dd[dd.length-1]
-          dd.pop()
-          return p
+          return dd.pop()
         }
         return new Float64Array(n)
       break
-      
+
       default:
         return null
     }
@@ -197,9 +181,7 @@ exports.mallocUint8 = function mallocUint8(n) {
   var log_n = bits.log2(n)
   var cache = UINT8[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Uint8Array(n)
 }
@@ -209,9 +191,7 @@ exports.mallocUint16 = function mallocUint16(n) {
   var log_n = bits.log2(n)
   var cache = UINT16[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Uint16Array(n)
 }
@@ -221,9 +201,7 @@ exports.mallocUint32 = function mallocUint32(n) {
   var log_n = bits.log2(n)
   var cache = UINT32[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Uint32Array(n)
 }
@@ -233,9 +211,7 @@ exports.mallocInt8 = function mallocInt8(n) {
   var log_n = bits.log2(n)
   var cache = INT8[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Int8Array(n)
 }
@@ -245,9 +221,7 @@ exports.mallocInt16 = function mallocInt16(n) {
   var log_n = bits.log2(n)
   var cache = INT16[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Int16Array(n)
 }
@@ -257,9 +231,7 @@ exports.mallocInt32 = function mallocInt32(n) {
   var log_n = bits.log2(n)
   var cache = INT32[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Int32Array(n)
 }
@@ -269,9 +241,7 @@ exports.mallocFloat32 = exports.mallocFloat = function mallocFloat(n) {
   var log_n = bits.log2(n)
   var cache = FLOAT[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Float32Array(n)
 }
@@ -281,9 +251,7 @@ exports.mallocFloat64 = exports.mallocDouble = function mallocDouble(n) {
   var log_n = bits.log2(n)
   var cache = DOUBLE[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new Float64Array(n)
 }
@@ -293,9 +261,7 @@ exports.mallocArrayBuffer = function mallocArrayBuffer(n) {
   var log_n = bits.log2(n)
   var cache = DATA[log_n]
   if(cache.length > 0) {
-    var r = cache[cache.length-1]
-    cache.pop()
-    return r
+    return cache.pop()
   }
   return new ArrayBuffer(n)
 }
