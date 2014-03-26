@@ -13,9 +13,17 @@ if(!global.__TYPEDARRAY_POOL) {
     , FLOAT   : dup([32, 0])
     , DOUBLE  : dup([32, 0])
     , DATA    : dup([32, 0])
+    , UINT8C  : dup([32, 0])
+    , BUFFER  : dup([32, 0])
   }
 }
 var POOL = global.__TYPEDARRAY_POOL
+if(!POOL.UINT8C) {
+  POOL.UINT8C = dup([32, 0])
+}
+if(!POOL.BUFFER) {
+  POOL.BUFFER = dup([32, 0])
+}
 var UINT8   = POOL.UINT8
   , UINT16  = POOL.UINT16
   , UINT32  = POOL.UINT32
@@ -25,6 +33,8 @@ var UINT8   = POOL.UINT8
   , FLOAT   = POOL.FLOAT
   , DOUBLE  = POOL.DOUBLE
   , DATA    = POOL.DATA
+  , UINT8C  = POOL.UINT8C
+  , BUFFER  = POOL.BUFFER
 
 exports.free = function free(array) {
   if(array instanceof ArrayBuffer) {
@@ -50,6 +60,12 @@ exports.free = function free(array) {
       FLOAT[log_n].push(array)
     } else if(array instanceof Float64Array) {
       DOUBLE[log_n].push(array)
+    } else if(array instanceof Uint8ClampedArray) {
+      UINT8C[log_n].push(array)
+    } else if(array instanceof Buffer) {
+      BUFFER[log_n].push(array)
+    } else {
+      throw new Error("typedarray-pool: Unspecified array type")
     }
   }
 }
@@ -88,6 +104,14 @@ exports.freeFloat64 = exports.freeDouble = function freeDouble(array) {
 
 exports.freeArrayBuffer = function freeArrayBuffer(array) {
   DATA[bits.log2(array.length)].push(array)
+}
+
+exports.freeUint8Clamped = function freeUint8Clamped(array) {
+  UINT8C[bits.log2(array.length)].push(array)
+}
+
+exports.freeBuffer = function freeBuffer(array) {
+  BUFFER[bits.log2(array.length)].push(array)
 }
 
 exports.malloc = function malloc(n, dtype) {
@@ -167,6 +191,22 @@ exports.malloc = function malloc(n, dtype) {
           return dd.pop()
         }
         return new Float64Array(n)
+      break
+
+      case "uint8_clamped":
+        var u8c = UINT8C[log_n]
+        if(u8c.length > 0) {
+          return u8c.pop()
+        }
+        return new Uint8ClampedArray(n)
+      break
+
+      case "buffer":
+        var buf = BUFFER[log_n]
+        if(buf.length > 0) {
+          return buf.pop()
+        }
+        return new Buffer(n)
       break
 
       default:
@@ -266,6 +306,26 @@ exports.mallocArrayBuffer = function mallocArrayBuffer(n) {
   return new ArrayBuffer(n)
 }
 
+exports.mallocUint8Clamped = function mallocUint8Clamped(n) {
+  n = bits.nextPow2(n)
+  var log_n = bits.log2(n)
+  var cache = UINT8C[log_n]
+  if(cache.length > 0) {
+    return cache.pop()
+  }
+  return new Uint8ClampedArray(n)
+}
+
+exports.mallocBuffer = function mallocBuffer(n) {
+  n = bits.nextPow2(n)
+  var log_n = bits.log2(n)
+  var cache = BUFFER[log_n]
+  if(cache.length > 0) {
+    return cache.pop()
+  }
+  return new Buffer(n)
+}
+
 exports.clearCache = function clearCache() {
   for(var i=0; i<32; ++i) {
     UINT8[i].length = 0
@@ -277,5 +337,7 @@ exports.clearCache = function clearCache() {
     FLOAT[i].length = 0
     DOUBLE[i].length = 0
     DATA[i].length = 0
+    UINT8C[i].length = 0
+    BUFFER[i].length = 0
   }
 }

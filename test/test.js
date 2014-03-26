@@ -1,5 +1,19 @@
 "use strict"
 
+//Check upgrade works
+var dup = require("dup")
+global.__TYPEDARRAY_POOL = {
+  UINT8   : dup([32, 0])
+, UINT16  : dup([32, 0])
+, UINT32  : dup([32, 0])
+, INT8    : dup([32, 0])
+, INT16   : dup([32, 0])
+, INT32   : dup([32, 0])
+, FLOAT   : dup([32, 0])
+, DOUBLE  : dup([32, 0])
+, DATA    : dup([32, 0])
+}
+
 var pool = require("../pool.js")
 
 require("tap").test("typedarray-pool", function(t) {
@@ -47,15 +61,22 @@ require("tap").test("typedarray-pool", function(t) {
     t.assert(a instanceof Float64Array)
     t.assert(a.length >= i)
     pool.free(a)
+
+    a = pool.malloc(i, "uint8_clamped")
+    t.assert(a instanceof Uint8ClampedArray)
+    t.assert(a.length >= i)
+    pool.free(a)
+
+    a = pool.malloc(i, "buffer")
+    t.assert(a instanceof Buffer)
+    t.assert(a.length >= i)
+    pool.free(a)
     
     a = pool.malloc(i)
     t.assert(a instanceof ArrayBuffer)
     t.assert(a.byteLength >= i)
     pool.free(a)
   }
-  
-  
-  
   
   for(var i=1; i<100; ++i) {
     var a
@@ -98,6 +119,16 @@ require("tap").test("typedarray-pool", function(t) {
     t.assert(a instanceof Float64Array)
     t.assert(a.length >= i)
     pool.freeDouble(a)
+    
+    a = pool.mallocUint8Clamped(i)
+    t.assert(a instanceof Uint8ClampedArray)
+    t.assert(a.length >= i)
+    pool.freeUint8Clamped(a)
+
+    a = pool.mallocBuffer(i)
+    t.assert(a instanceof Buffer)
+    t.assert(a.length >= i)
+    pool.freeBuffer(a)
     
     a = pool.mallocArrayBuffer(i)
     t.assert(a instanceof ArrayBuffer)

@@ -42,6 +42,8 @@ Allocates a typed array (or ArrayBuffer) with at least n elements.
   + `"float32"`
   + `"double"`
   + `"float64"`
+  + `"uint8_clamped"`
+  + `"buffer"`
 
 **Returns** A typed array with at least `n` elements in it.
 
@@ -56,6 +58,8 @@ Allocates a typed array (or ArrayBuffer) with at least n elements.
 * `pool.mallocFloat`
 * `pool.mallocDouble`
 * `pool.mallocArrayBuffer`
+* `pool.mallocUint8Clamped`
+* `pool.mallocBuffer`
 
 
 ### `pool.free(array)`
@@ -74,6 +78,8 @@ Returns the array back to the pool.
 * `pool.freeFloat`
 * `pool.freeDouble`
 * `pool.freeArrayBuffer`
+* `pool.freeUint8Clamped`
+* `pool.freeBuffer`
 
 ### `pool.clearCache()`
 Removes all references to cached arrays.  Use this when you are done with the pool to return all the cached memory to the garbage collector.
@@ -92,4 +98,4 @@ https://github.com/mikolalysenko/typedarray-cache-experiment
 Only if you know what you are doing.  This library will create a global pool of typed array buffers that you can use across many modules.  The downside though is that you have to manage all the memory yourself, so you can easily shoot yourself in the foot if you screw up.
 
 # Credits
-(c) 2013 Mikola Lysenko. MIT License
+(c) 2014 Mikola Lysenko. MIT License
