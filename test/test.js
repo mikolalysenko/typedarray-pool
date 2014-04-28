@@ -16,7 +16,7 @@ global.__TYPEDARRAY_POOL = {
 
 var pool = require("../pool.js")
 
-require("tap").test("typedarray-pool", function(t) {
+require("tape")("typedarray-pool", function(t) {
 
   pool.clearCache()
 
