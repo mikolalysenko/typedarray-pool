@@ -46,10 +46,11 @@ Allocates a typed array (or ArrayBuffer) with at least n elements.
   + `"float32"`
   + `"double"`
   + `"float64"`
+  + `"arraybuffer"`
   + `"uint8_clamped"`
   + `"buffer"`
 
-**Returns** A typed array with at least `n` elements in it.
+**Returns** A typed array with at least `n` elements in it.  If `dtype` is undefined, an ArrayBuffer is returned.
 
 **Note**  You can avoid the dispatch by directly calling one of the following methods:
 

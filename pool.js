@@ -129,7 +129,7 @@ exports.freeBuffer = function freeBuffer(array) {
 exports.malloc = function malloc(n, dtype) {
   n = bits.nextPow2(n)
   var log_n = bits.log2(n)
-  if(dtype === undefined) {
+  if(dtype === undefined || dtype === "arraybuffer") {
     var d = DATA[log_n]
     if(d.length > 0) {
       var r = d[d.length-1]
