@@ -126,7 +126,7 @@ require("tape")("typedarray-pool", function(t) {
     pool.freeUint8Clamped(a)
 
     a = pool.mallocBuffer(i)
-    t.assert(a instanceof Buffer)
+    t.assert(Buffer.isBuffer(a))
     t.assert(a.length >= i)
     pool.freeBuffer(a)
     

@@ -1,5 +1,3 @@
-"use strict"
-
 var bits = require("bit-twiddle")
 var dup = require("dup")
 if(!global.__TYPEDARRAY_POOL) {
@@ -17,6 +15,7 @@ if(!global.__TYPEDARRAY_POOL) {
     , BUFFER  : dup([32, 0])
   }
 }
+var hasUint8C = (typeof Uint8ClampedArray) !== "undefined"
 var POOL = global.__TYPEDARRAY_POOL
 if(!POOL.UINT8C) {
   POOL.UINT8C = dup([32, 0])
@@ -37,35 +36,44 @@ var UINT8   = POOL.UINT8
   , BUFFER  = POOL.BUFFER
 
 exports.free = function free(array) {
-  if(array instanceof ArrayBuffer) {
-    var n = array.byteLength|0
-      , log_n = bits.log2(n)
-    DATA[log_n].push(array)
+  var n = array.length|0
+    , log_n = bits.log2(n)
+  if(Buffer.isBuffer(array)) {
+    BUFFER[log_n].push(array)
   } else {
-    var n = array.length|0
-      , log_n = bits.log2(n)
-    if(array instanceof Uint8Array) {
-      UINT8[log_n].push(array)
-    } else if(array instanceof Uint16Array) {
-      UINT16[log_n].push(array)
-    } else if(array instanceof Uint32Array) {
-      UINT32[log_n].push(array)
-    } else if(array instanceof Int8Array) {
-      INT8[log_n].push(array)
-    } else if(array instanceof Int16Array) {
-      INT16[log_n].push(array)
-    } else if(array instanceof Int32Array) {
-      INT32[log_n].push(array)
-    } else if(array instanceof Float32Array) {
-      FLOAT[log_n].push(array)
-    } else if(array instanceof Float64Array) {
-      DOUBLE[log_n].push(array)
-    } else if(array instanceof Uint8ClampedArray) {
-      UINT8C[log_n].push(array)
-    } else if(array instanceof Buffer) {
-      BUFFER[log_n].push(array)
-    } else {
-      throw new Error("typedarray-pool: Unspecified array type")
+    switch(Object.prototype.toString.call(array)) {
+      case "[object Uint8Array]":
+        UINT8[log_n].push(array)
+      break
+      case "[object Uint16Array]":
+        UINT16[log_n].push(array)
+      break
+      case "[object Uint32Array]":
+        UINT32[log_n].push(array)
+      break
+      case "[object Int8Array]":
+        INT8[log_n].push(array)
+      break
+      case "[object Int16Array]":
+        INT16[log_n].push(array)
+      break
+      case "[object Int32Array]":
+        INT32[log_n].push(array)
+      break
+      case "[object Uint8ClampedArray]":
+        UINT8C[log_n].push(array)
+      break
+      case "[object Float32Array]":
+        FLOAT[log_n].push(array)
+      break
+      case "[object Float64Array]":
+        DOUBLE[log_n].push(array)
+      break
+      case "[object ArrayBuffer]":
+        DATA[log_n].push(array)
+      break
+      default:
+        throw new Error("typedarray-pool: Unspecified array type")
     }
   }
 }
@@ -106,8 +114,12 @@ exports.freeArrayBuffer = function freeArrayBuffer(array) {
   DATA[bits.log2(array.length)].push(array)
 }
 
-exports.freeUint8Clamped = function freeUint8Clamped(array) {
-  UINT8C[bits.log2(array.length)].push(array)
+if(hasUint8C) {
+  exports.freeUint8Clamped = function freeUint8Clamped(array) {
+    UINT8C[bits.log2(array.length)].push(array)
+  }
+} else {
+  exports.freeUint8Clamped = exports.freeUint8
 }
 
 exports.freeBuffer = function freeBuffer(array) {
@@ -194,11 +206,19 @@ exports.malloc = function malloc(n, dtype) {
       break
 
       case "uint8_clamped":
-        var u8c = UINT8C[log_n]
-        if(u8c.length > 0) {
-          return u8c.pop()
+        if(hasUint8C) {
+          var u8c = UINT8C[log_n]
+          if(u8c.length > 0) {
+            return u8c.pop()
+          }
+          return new Uint8ClampedArray(n)
+        } else {
+          var u8 = UINT8[log_n]
+          if(u8.length > 0) {
+            return u8.pop()
+          }
+          return new Uint8Array(n)
         }
-        return new Uint8ClampedArray(n)
       break
 
       case "buffer":
@@ -306,14 +326,18 @@ exports.mallocArrayBuffer = function mallocArrayBuffer(n) {
   return new ArrayBuffer(n)
 }
 
-exports.mallocUint8Clamped = function mallocUint8Clamped(n) {
-  n = bits.nextPow2(n)
-  var log_n = bits.log2(n)
-  var cache = UINT8C[log_n]
-  if(cache.length > 0) {
-    return cache.pop()
+if(hasUint8C) {
+  exports.mallocUint8Clamped = function mallocUint8Clamped(n) {
+    n = bits.nextPow2(n)
+    var log_n = bits.log2(n)
+    var cache = UINT8C[log_n]
+    if(cache.length > 0) {
+      return cache.pop()
+    }
+    return new Uint8ClampedArray(n)
   }
-  return new Uint8ClampedArray(n)
+} else {
+  exports.mallocUint8Clamped = exports.mallocUint8
 }
 
 exports.mallocBuffer = function mallocBuffer(n) {
