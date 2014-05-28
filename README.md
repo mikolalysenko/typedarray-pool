@@ -2,7 +2,11 @@ typedarray-pool
 ===============
 A global pool for typed arrays.
 
-## Example
+[![testling badge](https://ci.testling.com/mikolalysenko/typedarray-pool.png)](https://ci.testling.com/mikolalysenko/typedarray-pool)
+
+[![build status](https://secure.travis-ci.org/mikolalysenko/typedarray-pool.png)](http://travis-ci.org/mikolalysenko/typedarray-pool)
+
+# Example
 
 ```javascript
 var pool = require("typedarray-pool")
@@ -16,11 +20,11 @@ var f = pool.malloc(128, "float")
 pool.free(f)
 ```
 
-## Install
+# Install
 
     npm install typedarray-pool
 
-## API
+# API
 
 ```javascript
 var pool = require("typedarray-pool")
@@ -84,7 +88,7 @@ Returns the array back to the pool.
 ### `pool.clearCache()`
 Removes all references to cached arrays.  Use this when you are done with the pool to return all the cached memory to the garbage collector.
 
-## FAQ
+# FAQ
 
 ### Why cache typed arrays?
 Creating typed arrays is stupidly expensive in most JS engines.  So it makes sense to pool them, both so that frequently used typed arrays stay hot in cache and so that you can avoid having to trigger some expensive realloc operation whenever you use them.
