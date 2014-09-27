@@ -111,6 +111,7 @@ exports.malloc = function malloc(n, dtype) {
       case 'buffer':
         return mallocBuffer(n)
       case 'data':
+      case 'dataview':
         return mallocDataView(n)
 
       default:

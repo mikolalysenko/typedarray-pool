@@ -86,6 +86,11 @@ require("tape")("typedarray-pool", function(t) {
     t.assert(a instanceof ArrayBuffer, "array buffer")
     t.assert(a.byteLength >= i)
     pool.free(a)
+
+    a = pool.malloc(i, "dataview")
+    t.assert(a instanceof DataView, "dataview")
+    t.assert(a.byteLength >= i)
+    pool.free(a)
   }
   
   for(var i=1; i<100; ++i) {
@@ -149,6 +154,11 @@ require("tape")("typedarray-pool", function(t) {
     t.assert(a instanceof ArrayBuffer, "array buffer")
     t.assert(a.byteLength >= i)
     pool.freeArrayBuffer(a)
+
+    a = pool.mallocDataView(i)
+    t.assert(a instanceof DataView, "data view")
+    t.assert(a.byteLength >= i)
+    pool.freeDataView(a)
   }
   
   pool.clearCache()
