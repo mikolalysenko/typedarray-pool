@@ -74,7 +74,8 @@ exports.freeFloat32 =
 exports.freeFloat =
 exports.freeFloat64 = 
 exports.freeDouble = 
-exports.freeUint8Clamped = freeTypedArray
+exports.freeUint8Clamped = 
+exports.freeDataView = freeTypedArray
 
 exports.freeArrayBuffer = freeArrayBuffer
 
@@ -109,6 +110,8 @@ exports.malloc = function malloc(n, dtype) {
         return mallocUint8Clamped(n)
       case 'buffer':
         return mallocBuffer(n)
+      case 'data':
+        return mallocDataView(n)
 
       default:
         return null
@@ -176,6 +179,11 @@ function mallocUint8Clamped(n) {
   }
 }
 exports.mallocUint8Clamped = mallocUint8Clamped
+
+function mallocDataView(n) {
+  return new DataView(mallocArrayBuffer(n), 0, n)
+}
+exports.mallocDataView = mallocDataView
 
 function mallocBuffer(n) {
   n = bits.nextPow2(n)
