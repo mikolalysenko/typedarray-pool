@@ -53,7 +53,7 @@
       "android-browser/4.2..latest"
     ]
   },
-  "browserify": {
+  "browser": {
     "buffer": false
   }
 }
