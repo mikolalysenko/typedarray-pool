@@ -91,5 +91,13 @@ Returns the array back to the pool.
 ### `pool.clearCache()`
 Removes all references to cached arrays.  Use this when you are done with the pool to return all the cached memory to the garbage collector.
 
+# Why did you write this?
+
+When you are frequently reusing temporary typedarrays in calculations, it gets expensive to initialize them to zero (especially if the result
+is just going to get overwritten immediately anyway). If you pool the typed arrays, you don't pay this cost and you get the advantage of
+reusing hot-in-cache memory for various operations.
+
+This is also valuable in simulations/games that need to avoid large garbage collection pauses. Pooling memory significantly helps with this.
+
 # Credits
 (c) 2014 Mikola Lysenko. MIT License
