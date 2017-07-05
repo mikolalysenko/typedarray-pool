@@ -70,11 +70,11 @@ exports.freeUint32 =
 exports.freeInt8 =
 exports.freeInt16 =
 exports.freeInt32 =
-exports.freeFloat32 = 
+exports.freeFloat32 =
 exports.freeFloat =
-exports.freeFloat64 = 
-exports.freeDouble = 
-exports.freeUint8Clamped = 
+exports.freeFloat64 =
+exports.freeDouble =
+exports.freeUint8Clamped =
 exports.freeDataView = freeTypedArray
 
 exports.freeArrayBuffer = freeArrayBuffer
