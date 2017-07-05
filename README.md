@@ -100,4 +100,4 @@ reusing hot-in-cache memory for various operations.
 This is also valuable in simulations/games that need to avoid large garbage collection pauses. Pooling memory significantly helps with this.
 
 # Credits
-(c) 2014 Mikola Lysenko. MIT License
+(c) 2013-2017 Mikola Lysenko. MIT License
