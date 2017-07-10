@@ -11,12 +11,28 @@ A global pool for typed arrays.
 ```javascript
 var pool = require("typedarray-pool")
 
-//Allocate a buffer with at least 128 floats
+// allocate a buffer with at least 128 floats
 var f = pool.malloc(128, "float")
 
 // ... do stuff ...
 
-//When done, release buffer
+// when done, release buffer
+pool.free(f)
+```
+
+# Allocating exact sized arrays
+
+You may run into situations where an exact array size is needed. For example,
+want an array that holds exactly 14 doubles. You can accomplish this with:
+
+```javascript
+var pool = require("typedarray-pool")
+
+// allocate a buffer with exactly  14 doubles
+var exactSize = true
+var f = pool.malloc(14, "double", exactSize)
+
+// when done, release buffer
 pool.free(f)
 ```
 
@@ -91,5 +107,13 @@ Returns the array back to the pool.
 ### `pool.clearCache()`
 Removes all references to cached arrays.  Use this when you are done with the pool to return all the cached memory to the garbage collector.
 
+# Why did you write this?
+
+When you are frequently reusing temporary typedarrays in calculations, it gets expensive to initialize them to zero (especially if the result
+is just going to get overwritten immediately anyway). If you pool the typed arrays, you don't pay this cost and you get the advantage of
+reusing hot-in-cache memory for various operations.
+
+This is also valuable in simulations/games that need to avoid large garbage collection pauses. Pooling memory significantly helps with this.
+
 # Credits
-(c) 2014 Mikola Lysenko. MIT License
+(c) 2013-2017 Mikola Lysenko. MIT License
