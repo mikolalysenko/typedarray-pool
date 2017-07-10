@@ -1,9 +1,11 @@
 'use strict'
 
-var bits = require('bit-twiddle')
-var dup = require('dup')
+var bits  = require('bit-twiddle')
+var dup   = require('dup')
+var exact = require('./pool-exact')
 
-//Legacy pool support
+
+// Legacy pool support
 if(!global.__TYPEDARRAY_POOL) {
   global.__TYPEDARRAY_POOL = {
       UINT8   : dup([32, 0])
@@ -23,7 +25,7 @@ if(!global.__TYPEDARRAY_POOL) {
 var hasUint8C = (typeof Uint8ClampedArray) !== 'undefined'
 var POOL = global.__TYPEDARRAY_POOL
 
-//Upgrade pool
+// Upgrade pool
 if(!POOL.UINT8C) {
   POOL.UINT8C = dup([32, 0])
 }
@@ -31,33 +33,44 @@ if(!POOL.BUFFER) {
   POOL.BUFFER = dup([32, 0])
 }
 
-//New technique: Only allocate from ArrayBufferView and Buffer
+// New technique: Only allocate from ArrayBufferView and Buffer
 var DATA    = POOL.DATA
   , BUFFER  = POOL.BUFFER
 
-exports.free = function free(array) {
-  if(Buffer.isBuffer(array)) {
-    BUFFER[bits.log2(array.length)].push(array)
-  } else {
-    if(Object.prototype.toString.call(array) !== '[object ArrayBuffer]') {
-      array = array.buffer
-    }
-    if(!array) {
-      return
-    }
-    var n = array.length || array.byteLength
-    var log_n = bits.log2(n)|0
-    DATA[log_n].push(array)
-  }
+function isPow2(n) {
+  return bits.nextPow2(n) === n
 }
 
 function freeArrayBuffer(buffer) {
   if(!buffer) {
     return
   }
-  var n = buffer.length || buffer.byteLength
-  var log_n = bits.log2(n)
-  DATA[log_n].push(buffer)
+  var log_n, n = buffer.length || buffer.byteLength
+  if(isPow2(n)) {
+    log_n = bits.log2(n)
+    DATA[log_n].push(buffer)
+  } else {
+    exact.freeArrayBuffer(buffer)
+  }
+}
+
+function freeBuffer(array) {
+  if(isPow2(array.length)) {
+    BUFFER[bits.log2(array.length)].push(array)
+  } else {
+    exact.freeBuffer(array)
+  }
+}
+
+exports.free = function free(array) {
+  if(Buffer.isBuffer(array)) {
+    freeBuffer(array)
+  } else {
+    if(Object.prototype.toString.call(array) !== '[object ArrayBuffer]') {
+      array = array.buffer
+    }
+    freeArrayBuffer(array)
+  }
 }
 
 function freeTypedArray(array) {
@@ -78,41 +91,38 @@ exports.freeUint8Clamped =
 exports.freeDataView = freeTypedArray
 
 exports.freeArrayBuffer = freeArrayBuffer
+exports.freeBuffer = freeBuffer
 
-exports.freeBuffer = function freeBuffer(array) {
-  BUFFER[bits.log2(array.length)].push(array)
-}
-
-exports.malloc = function malloc(n, dtype) {
+exports.malloc = function malloc(n, dtype, exactSize) {
   if(dtype === undefined || dtype === 'arraybuffer') {
-    return mallocArrayBuffer(n)
+    return mallocArrayBuffer(n, exactSize)
   } else {
     switch(dtype) {
       case 'uint8':
-        return mallocUint8(n)
+        return mallocUint8(n, exactSize)
       case 'uint16':
-        return mallocUint16(n)
+        return mallocUint16(n, exactSize)
       case 'uint32':
-        return mallocUint32(n)
+        return mallocUint32(n, exactSize)
       case 'int8':
-        return mallocInt8(n)
+        return mallocInt8(n, exactSize)
       case 'int16':
-        return mallocInt16(n)
+        return mallocInt16(n, exactSize)
       case 'int32':
-        return mallocInt32(n)
+        return mallocInt32(n, exactSize)
       case 'float':
       case 'float32':
-        return mallocFloat(n)
+        return mallocFloat(n, exactSize)
       case 'double':
       case 'float64':
-        return mallocDouble(n)
+        return mallocDouble(n, exactSize)
       case 'uint8_clamped':
-        return mallocUint8Clamped(n)
+        return mallocUint8Clamped(n, exactSize)
       case 'buffer':
-        return mallocBuffer(n)
+        return mallocBuffer(n, exactSize)
       case 'data':
       case 'dataview':
-        return mallocDataView(n)
+        return mallocDataView(n, exactSize)
 
       default:
         return null
@@ -121,7 +131,10 @@ exports.malloc = function malloc(n, dtype) {
   return null
 }
 
-function mallocArrayBuffer(n) {
+function mallocArrayBuffer(n, exactSize) {
+  if(exactSize === true && !isPow2(n)) {
+    return exact.mallocArrayBuffer(n)
+  }
   var n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var d = DATA[log_n]
@@ -132,61 +145,64 @@ function mallocArrayBuffer(n) {
 }
 exports.mallocArrayBuffer = mallocArrayBuffer
 
-function mallocUint8(n) {
-  return new Uint8Array(mallocArrayBuffer(n), 0, n)
+function mallocUint8(n, exactSize) {
+  return new Uint8Array(mallocArrayBuffer(n, exactSize), 0, n)
 }
 exports.mallocUint8 = mallocUint8
 
-function mallocUint16(n) {
-  return new Uint16Array(mallocArrayBuffer(2*n), 0, n)
+function mallocUint16(n, exactSize) {
+  return new Uint16Array(mallocArrayBuffer(2*n, exactSize), 0, n)
 }
 exports.mallocUint16 = mallocUint16
 
-function mallocUint32(n) {
-  return new Uint32Array(mallocArrayBuffer(4*n), 0, n)
+function mallocUint32(n, exactSize) {
+  return new Uint32Array(mallocArrayBuffer(4*n, exactSize), 0, n)
 }
 exports.mallocUint32 = mallocUint32
 
-function mallocInt8(n) {
-  return new Int8Array(mallocArrayBuffer(n), 0, n)
+function mallocInt8(n, exactSize) {
+  return new Int8Array(mallocArrayBuffer(n, exactSize), 0, n)
 }
 exports.mallocInt8 = mallocInt8
 
-function mallocInt16(n) {
-  return new Int16Array(mallocArrayBuffer(2*n), 0, n)
+function mallocInt16(n, exactSize) {
+  return new Int16Array(mallocArrayBuffer(2*n, exactSize), 0, n)
 }
 exports.mallocInt16 = mallocInt16
 
-function mallocInt32(n) {
-  return new Int32Array(mallocArrayBuffer(4*n), 0, n)
+function mallocInt32(n, exactSize) {
+  return new Int32Array(mallocArrayBuffer(4*n, exactSize), 0, n)
 }
 exports.mallocInt32 = mallocInt32
 
-function mallocFloat(n) {
-  return new Float32Array(mallocArrayBuffer(4*n), 0, n)
+function mallocFloat(n, exactSize) {
+  return new Float32Array(mallocArrayBuffer(4*n, exactSize), 0, n)
 }
 exports.mallocFloat32 = exports.mallocFloat = mallocFloat
 
-function mallocDouble(n) {
-  return new Float64Array(mallocArrayBuffer(8*n), 0, n)
+function mallocDouble(n, exactSize) {
+  return new Float64Array(mallocArrayBuffer(8*n, exactSize), 0, n)
 }
 exports.mallocFloat64 = exports.mallocDouble = mallocDouble
 
-function mallocUint8Clamped(n) {
+function mallocUint8Clamped(n, exactSize) {
   if(hasUint8C) {
-    return new Uint8ClampedArray(mallocArrayBuffer(n), 0, n)
+    return new Uint8ClampedArray(mallocArrayBuffer(n, exactSize), 0, n)
   } else {
-    return mallocUint8(n)
+    return mallocUint8(n, exactSize)
   }
 }
 exports.mallocUint8Clamped = mallocUint8Clamped
 
-function mallocDataView(n) {
-  return new DataView(mallocArrayBuffer(n), 0, n)
+function mallocDataView(n, exactSize) {
+  return new DataView(mallocArrayBuffer(n, exactSize), 0, n)
 }
 exports.mallocDataView = mallocDataView
 
-function mallocBuffer(n) {
+function mallocBuffer(n, exactSize) {
+  if(exactSize === true && !isPow2(n)) {
+    return exact.mallocBuffer(n)
+  }
   n = bits.nextPow2(n)
   var log_n = bits.log2(n)
   var cache = BUFFER[log_n]
@@ -211,4 +227,5 @@ exports.clearCache = function clearCache() {
     DATA[i].length = 0
     BUFFER[i].length = 0
   }
+  exact.clearCache()
 }

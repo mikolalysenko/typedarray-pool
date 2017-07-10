@@ -11,12 +11,28 @@ A global pool for typed arrays.
 ```javascript
 var pool = require("typedarray-pool")
 
-//Allocate a buffer with at least 128 floats
+// allocate a buffer with at least 128 floats
 var f = pool.malloc(128, "float")
 
 // ... do stuff ...
 
-//When done, release buffer
+// when done, release buffer
+pool.free(f)
+```
+
+# Allocating exact sized arrays
+
+You may run into situations where an exact array size is needed. For example,
+want an array that holds exactly 14 doubles. You can accomplish this with:
+
+```javascript
+var pool = require("typedarray-pool")
+
+// allocate a buffer with exactly  14 doubles
+var exactSize = true
+var f = pool.malloc(14, "double", exactSize)
+
+// when done, release buffer
 pool.free(f)
 ```
 

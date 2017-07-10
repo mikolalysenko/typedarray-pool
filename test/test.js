@@ -2,6 +2,7 @@
 
 //Check upgrade works
 var dup = require("dup")
+
 global.__TYPEDARRAY_POOL = {
   UINT8   : dup([32, 0])
 , UINT16  : dup([32, 0])
@@ -14,7 +15,7 @@ global.__TYPEDARRAY_POOL = {
 , DATA    : dup([32, 0])
 }
 
-var pool = require("../pool.js")
+var pool = require("../pool")
 
 require("tape")("typedarray-pool", function(t) {
 
