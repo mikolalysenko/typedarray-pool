@@ -49,6 +49,8 @@ Allocates a typed array (or ArrayBuffer) with at least n elements.
   + `"arraybuffer"`
   + `"data"`
   + `"uint8_clamped"`
+  + `"bigint64"`
+  + `"biguint64"`
   + `"buffer"`
 
 **Returns** A typed array with at least `n` elements in it.  If `dtype` is undefined, an ArrayBuffer is returned.
@@ -66,6 +68,8 @@ Allocates a typed array (or ArrayBuffer) with at least n elements.
 * `pool.mallocArrayBuffer`
 * `pool.mallocDataView`
 * `pool.mallocUint8Clamped`
+* `pool.mallocBigInt64`
+* `pool.mallocBigUint64`
 * `pool.mallocBuffer`
 
 ### `pool.free(array)`
@@ -86,6 +90,8 @@ Returns the array back to the pool.
 * `pool.freeArrayBuffer`
 * `pool.freeDataView`
 * `pool.freeUint8Clamped`
+* `pool.freeBigInt64`
+* `pool.freeBigUint64`
 * `pool.freeBuffer`
 
 ### `pool.clearCache()`
