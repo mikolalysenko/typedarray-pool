@@ -2,6 +2,7 @@
 
 var bits = require('bit-twiddle')
 var dup = require('dup')
+var Buffer = require('buffer').Buffer
 
 //Legacy pool support
 if(!global.__TYPEDARRAY_POOL) {
