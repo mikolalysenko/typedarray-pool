@@ -72,6 +72,24 @@ require("tape")("typedarray-pool", function(t) {
     t.assert(a.length >= i)
     pool.free(a)
 
+    a = pool.malloc(i, "bigint64")
+    if((typeof BigInt64Array) !== "undefined") {
+        t.assert(a instanceof BigInt64Array, "bigint64")
+    } else {
+        t.assert(a instanceof BigInt64Array, "bigint64 defaults to null")
+    }
+    t.assert(a.length >= i)
+    pool.free(a)
+
+    a = pool.malloc(i, "biguint64")
+    if((typeof BigUint64Array) !== "undefined") {
+        t.assert(a instanceof BigUint64Array, "biguint64")
+    } else {
+        t.assert(a instanceof BigUint64Array, "biguint64 defaults to null")
+    }
+    t.assert(a.length >= i)
+    pool.free(a)
+
     a = pool.malloc(i, "buffer")
     t.assert(Buffer.isBuffer(a), "buffer")
     t.assert(a.length >= i)
@@ -144,6 +162,24 @@ require("tape")("typedarray-pool", function(t) {
     }
     t.assert(a.length >= i)
     pool.freeUint8Clamped(a)
+
+    a = pool.mallocBigInt64(i)
+    if((typeof BigInt64Array) !== "undefined") {
+        t.assert(a instanceof BigInt64Array, "bigint64")
+    } else {
+        t.equal(a, null, "bigint64 defaults null")
+    }
+    t.assert(a.length >= i)
+    pool.freeBigInt64(a)
+
+    a = pool.mallocBigUint64(i)
+    if((typeof BigUint64Array) !== "undefined") {
+        t.assert(a instanceof BigUint64Array, "biguint64")
+    } else {
+        t.equal(a, null, "bigint64 defaults null")
+    }
+    t.assert(a.length >= i)
+    pool.freeBigUint64(a)
 
     a = pool.mallocBuffer(i)
     t.assert(Buffer.isBuffer(a), "buffer")
