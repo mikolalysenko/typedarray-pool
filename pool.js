@@ -5,6 +5,7 @@ var dup = require('dup')
 var Buffer = require('buffer').Buffer
 
 //Legacy pool support
+var global = global || self;
 if(!global.__TYPEDARRAY_POOL) {
   global.__TYPEDARRAY_POOL = {
       UINT8     : dup([32, 0])
