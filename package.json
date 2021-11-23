@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bit-twiddle": "^1.0.0",
+    "buffer": "^6.0.0",
     "dup": "^1.0.0"
   },
   "devDependencies": {
